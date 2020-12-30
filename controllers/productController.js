@@ -1,14 +1,18 @@
 const Product = require('../models/product')
 
+const ErrorHandler = require('../utils/errorHandler');
+const catchAsyncErrors = require('../middlewares/catchAsyncErrors')
+
+
 // Tworzę nowy produkt => /api/v1/product/new
-exports.newProduct = async (req, res, next) => {
+exports.newProduct = catchAsyncErrors(async (req, res, next) => {
     const product = await Product.create(req.body)
 
     res.status(201).json({
         success: true,
         product
     })
-}
+})
 
 
 exports.getProducts = async (req, res, next) => {
@@ -23,38 +27,33 @@ exports.getProducts = async (req, res, next) => {
 }
 
 // Get single product details   =>   /api/v1/product/:id
-exports.getSingleProduct = async (req, res, next) => {
+exports.getSingleProduct = catchAsyncErrors( async (req, res, next) => {
 
     const product = await Product.findById(req.params.id);
     // cg skąd to id?
     // cg skąd w produktach bierze się id ? w modelu tego nie definiowałem
 
     if (!product) {
-        return res.status(404).json({
-            success: false,
-            message: "Produktu nie znaleziono"
-        })
+        return next(new ErrorHandler('Nie znaleziono producktu', 404))
     }
     res.status(200).json({
         success: true,
         product
     })
 
-}
+})
 
 // _________________________________________________________________
 
 // Update Product   =>   /api/v1/admin/product/:id
-exports.updateProduct = async (req, res, next) => {
+exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
 
     let product = await Product.findById(req.params.id);
     // cg czemu do licha on szuka
 
     if (!product) {
-        return res.status(404).json({
-            success: false,
-            message: "Produktu nie znaleziono"
-        })
+        return next(new ErrorHandler('Nie znaleziono producktu', 404))
+
     }
 
 
@@ -69,20 +68,18 @@ exports.updateProduct = async (req, res, next) => {
         product
     })
 
-}
+})
 
 // _________________________________________________________________
 
 // Delete Product   =>   /api/v1/admin/product/:id
-exports.deleteProduct = async (req, res, next) => {
+exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
 
     const product = await Product.findById(req.params.id);
 
     if (!product) {
-        return res.status(404).json({
-            success: false,
-            message: "Produktu nie znaleziono"
-        })
+        return next(new ErrorHandler('Nie znaleziono producktu', 404))
+
     }
 
     await product.remove();
@@ -92,4 +89,4 @@ exports.deleteProduct = async (req, res, next) => {
         message: 'Produkt usunięto z sukcesem.'
     })
 
-}
+})
