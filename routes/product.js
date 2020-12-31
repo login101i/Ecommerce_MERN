@@ -10,13 +10,18 @@ const {
     deleteProduct
 } = require('../controllers/productController')
 
-router.route('/products').get(getProducts)
-router.route('/product/new').post(newProduct)
+
+const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
+
+
+router.route('/products').get(isAuthenticatedUser, authorizeRoles('admin'), getProducts)
 router.route('/product/:id').get(getSingleProduct)
+router.route('/admin/product/new').post(isAuthenticatedUser, newProduct)
+
 // cg czemu tutaj dwukropek?
 router.route('/admin/product/:id')
-.put(updateProduct)
-.delete(deleteProduct)
+    .put(isAuthenticatedUser, authorizeRoles('admin'),  updateProduct)
+    .delete(isAuthenticatedUser, authorizeRoles('admin'),  deleteProduct)
 
 
 module.exports = router
