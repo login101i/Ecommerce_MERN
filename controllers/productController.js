@@ -23,6 +23,9 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
 
+        // return next(new ErrorHandler("To jest errorr", 400))
+
+
     const resPerPage = 4
     const productsCount = await Product.countDocuments();
 
@@ -34,13 +37,21 @@ exports.getProducts = catchAsyncErrors(async (req, res, next) => {
         .filter()
         .pagination(resPerPage)
     const products = await apiFeatures.query;
+    let filteredProductsCount = products.length;
 
-    res.status(200).json({
-        success: true,
-        count: products.length,
-        productsCount,
-        products
-    })
+
+    setTimeout(() => {
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            productsCount,
+            products,
+            resPerPage,
+            filteredProductsCount
+        })
+    }, 1000)
+
+
 })
 
 // Get single product details   =>   /api/v1/product/:id
@@ -118,7 +129,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
 
 
 
-    // / Create new review   => /api/v1 / review
+// / Create new review   => /api/v1 / review
 exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
 
     const { rating, comment, productId } = req.body;

@@ -3,6 +3,8 @@ const connectDatabase=require('./config/database')
 
 
 const dotenv=require('dotenv')
+const cloudinary = require('cloudinary')
+
 
 
 // Handle Uncaught exceptions
@@ -17,6 +19,13 @@ dotenv.config({path:'../backend/config/config.env'})
 
 // połaczenie z basą canych
 connectDatabase()
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    apic_secret: process.env.CLOUDINARY_API_SECRET
+})
+
 
 
 
